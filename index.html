@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TỐI ƯU FREE FIRE VIP - DEV BY HOÀNG HÀ & TRỌNG KIÊN</title>
+    
+    <!-- iOS / PWA Mobile App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tối Ưu FF">
+    <meta name="theme-color" content="#060813">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Firebase SDK (v8 Standalone Compatibility) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-brand">
+            <img src="assets/logo.png" alt="App Logo" class="app-icon-img">
+            <div class="brand-titles">
+                <h1>TỐI ƯU FREE FIRE</h1>
+                <p>⚡ DEV BY HOÀNG HÀ & TRỌNG KIÊN</p>
+            </div>
+        </div>
+        <div class="header-badge">
+            <div class="pulse-dot"></div>
+            <span>VIP PRO</span>
+        </div>
+    </header>
+
+    <!-- Main Viewport -->
+    <main class="app-viewport">
+        <!-- TAB 1: BOOSTER DASHBOARD -->
+        <section id="tabBooster" class="tab-page active">
+            <!-- Game Selection -->
+            <div class="section-title">
+                <span>🎯 Chọn Phiên Bản Game</span>
+            </div>
+            <div class="games-grid">
+                <div class="game-card selected" id="cardFFNormal" data-game="normal">
+                    <img src="assets/freefire_logo.png" alt="Free Fire" class="game-logo-img">
+                    <h3>Free Fire</h3>
+                    <p>Bản Tiêu Chuẩn</p>
+                </div>
+                <div class="game-card" id="cardFFMax" data-game="max">
+                    <img src="assets/freefire_max_logo.png" alt="Free Fire MAX" class="game-logo-img">
+                    <h3>Free Fire MAX</h3>
+                    <p>Bản Đồ Họa Ultra</p>
+                </div>
+            </div>
+
+            <!-- Radar 3D HUD -->
+            <div class="booster-hud-card">
+                <div class="radar-circle-wrapper" id="radarWrapper">
+                    <div class="radar-ring"></div>
+                    <div class="radar-ring-inner"></div>
+                    <div class="radar-sweep"></div>
+                    <div class="radar-center-info">
+                        <div class="radar-pct" id="radarPctText">0%</div>
+                        <div class="radar-label">TRẠNG THÁI</div>
+                    </div>
+                </div>
+
+                <!-- Live Cyber Terminal Logs -->
+                <div class="cyber-terminal" id="cyberTerminalLog">
+                    [SẴN SÀNG] Chọn game và nhấn nút Bắt Đầu Tối Ưu bên dưới...
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button class="btn-start-boost" id="btnStartBoost">
+                <span>🚀 BẮT ĐẦU TỐI ƯU & VÀO GAME</span>
+            </button>
+
+            <!-- Dev Credit Banner -->
+            <div class="dev-credit-banner">
+                <div class="dev-credit-title">⚡ Dev By Hoàng Hà And Trọng Kiên</div>
+                <div class="dev-credit-sub">Tối ưu phần cứng thật - Chống giật lag 100%</div>
+            </div>
+        </section>
+
+        <!-- TAB 2: VIP TWEAKS -->
+        <section id="tabTweaks" class="tab-page">
+            <div class="section-title">
+                <span>⚙️ Tinh Chỉnh VIP (Hardware Engine)</span>
+            </div>
+
+            <div class="tweak-toggle-item">
+                <div class="tweak-info">
+                    <h4>🧹 Giải Phóng RAM Rác (Real RAM Flush)</h4>
+                    <p>Tự động ép dọn sạch bộ nhớ cache và heap OS</p>
+                </div>
+                <label class="cyber-switch">
+                    <input type="checkbox" id="toggleRamFlush" checked>
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+
+            <div class="tweak-toggle-item">
+                <div class="tweak-info">
+                    <h4>🌐 Tối Ưu Định Tuyến DNS 1.1.1.1</h4>
+                    <p>Giảm ping tối đa, chống packet loss khi bắn</p>
+                </div>
+                <label class="cyber-switch">
+                    <input type="checkbox" id="toggleDNS" checked>
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+
+            <div class="tweak-toggle-item">
+                <div class="tweak-info">
+                    <h4>⚡ Cảm Ứng Siêu Nhạy (Ultra Touch 0.1ms)</h4>
+                    <p>Hiệu chỉnh tần số phản hồi vuốt tâm cực chuẩn</p>
+                </div>
+                <label class="cyber-switch">
+                    <input type="checkbox" id="toggleTouch" checked>
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+
+            <div class="tweak-toggle-item">
+                <div class="tweak-info">
+                    <h4>🔥 Mở Khóa 120 FPS & Chống Tụt Khung Hình</h4>
+                    <p>Ổn định FPS cho màn hình 60Hz/120Hz ProMotion</p>
+                </div>
+                <label class="cyber-switch">
+                    <input type="checkbox" id="toggle120FPS" checked>
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+
+            <div class="tweak-toggle-item">
+                <div class="tweak-info">
+                    <h4>🛡️ Nung Trước GPU Shader Cache</h4>
+                    <p>Khởi động trước pipeline đồ họa chống khựng game</p>
+                </div>
+                <label class="cyber-switch">
+                    <input type="checkbox" id="toggleShader" checked>
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+
+            <!-- Dev Credit Banner -->
+            <div class="dev-credit-banner" style="margin-top: 18px;">
+                <div class="dev-credit-title">⚡ Dev By Hoàng Hà And Trọng Kiên</div>
+                <div class="dev-credit-sub">Tối ưu phần cứng thật không giả lập</div>
+            </div>
+        </section>
+
+        <!-- TAB 3: SETTINGS & LIVE CLOCK -->
+        <section id="tabSettings" class="tab-page">
+            <!-- Expiration Countdown Hero Card -->
+            <div class="timer-hero-card">
+                <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
+                    ⏳ THỜI GIAN CÒN LẠI CỦA KEY
+                </div>
+
+                <div class="timer-countdown-grid">
+                    <div class="timer-box">
+                        <div class="timer-num" id="timerDays">00</div>
+                        <div class="timer-unit">Ngày</div>
+                    </div>
+                    <div class="timer-box">
+                        <div class="timer-num" id="timerHours">00</div>
+                        <div class="timer-unit">Giờ</div>
+                    </div>
+                    <div class="timer-box">
+                        <div class="timer-num" id="timerMins">00</div>
+                        <div class="timer-unit">Phút</div>
+                    </div>
+                    <div class="timer-box">
+                        <div class="timer-num" id="timerSecs">00</div>
+                        <div class="timer-unit">Giây</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                    <span class="key-badge badge-active" id="keyStatusBadge">🟢 ĐANG HOẠT ĐỘNG</span>
+                    <span style="font-size: 12px; color: var(--text-muted);" id="keyExactExpiryDate">Đang tải...</span>
+                </div>
+            </div>
+
+            <!-- Hardware Diagnostic Specs -->
+            <div class="section-title">
+                <span>📱 Thông Số Thiết Bị & Phần Cứng</span>
+            </div>
+            <div class="spec-list">
+                <div class="spec-item">
+                    <span class="spec-name"><span>📱</span> Thiết Bị / OS:</span>
+                    <span class="spec-val" id="specOS">iOS Device</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name"><span>🎮</span> GPU Renderer:</span>
+                    <span class="spec-val" id="specGPU">Apple GPU</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name"><span>🖥️</span> Màn Hình:</span>
+                    <span class="spec-val" id="specScreen">Retina HD</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name"><span>⚡</span> Tần Số Quét:</span>
+                    <span class="spec-val" id="specHz">120Hz ProMotion</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name"><span>📡</span> Độ Trễ Mạng (Ping):</span>
+                    <span class="spec-val" style="color: var(--accent-green);" id="specPing">16 ms</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name"><span>🔑</span> Key Đang Dùng:</span>
+                    <span class="spec-val" style="color: var(--accent-cyan);" id="keyMaskedText">VIP-****-XXXX</span>
+                </div>
+            </div>
+
+            <!-- Dev Credit Banner -->
+            <div class="dev-credit-banner">
+                <div class="dev-credit-title">⚡ Dev By Hoàng Hà And Trọng Kiên</div>
+                <div class="dev-credit-sub">Bản quyền 2026 - Tối ưu thật không giả lập</div>
+            </div>
+
+            <!-- Logout button -->
+            <button class="btn-logout" id="btnLogoutKey">
+                🚪 ĐĂNG XUẤT / ĐỔI KEY KHÁC
+            </button>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-tab="tabBooster">
+            <span class="nav-icon">🚀</span>
+            <span>Tối Ưu</span>
+        </button>
+        <button class="nav-item" data-tab="tabTweaks">
+            <span class="nav-icon">⚡</span>
+            <span>Tinh Chỉnh</span>
+        </button>
+        <button class="nav-item" data-tab="tabSettings">
+            <span class="nav-icon">⚙️</span>
+            <span>Cài Đặt</span>
+        </button>
+    </nav>
+
+    <!-- AUTHENTICATION OVERLAY (KEY INPUT SCREEN) -->
+    <div class="auth-overlay" id="authOverlay">
+        <img src="assets/logo.png" alt="App Logo" class="auth-logo">
+        <h2 class="auth-title">XÁC THỰC BẢO MẬT</h2>
+        <p class="auth-desc">
+            Vui lòng nhập mã Key bản quyền VIP để truy cập hệ thống tối ưu Free Fire.
+        </p>
+
+        <form id="keyAuthForm" style="width: 100%; max-width: 340px;">
+            <div class="auth-input-box">
+                <input type="text" id="inputLicenseKey" class="auth-input" placeholder="NHẬP MÃ KEY VIP" autocomplete="off" required>
+                <div class="auth-error-msg" id="authErrorMsg"></div>
+            </div>
+            <button type="submit" class="btn-auth-verify" id="btnVerifyKey">
+                🔓 KÍCH HOẠT NGAY
+            </button>
+        </form>
+
+        <div style="margin-top: 28px;">
+            <span class="dev-credit-title" style="font-size: 13px;">⚡ Dev By Hoàng Hà And Trọng Kiên</span>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="js/config.js"></script>
+<script src="js/security.js"></script>
+<script src="js/firebase-auth.js"></script>
+<script src="js/booster.js"></script>
+<script src="js/settings.js"></script>
+
+<script>
+    // Main App Controller
+    document.addEventListener("DOMContentLoaded", async () => {
+        // Initialize Anti-Tampering
+        window.SecurityEngine.initAntiTampering((reason) => {
+            console.warn("[Security Alert]", reason);
+        });
+
+        const authOverlay = document.getElementById("authOverlay");
+        const inputLicenseKey = document.getElementById("inputLicenseKey");
+        const authErrorMsg = document.getElementById("authErrorMsg");
+        const keyAuthForm = document.getElementById("keyAuthForm");
+        const btnVerifyKey = document.getElementById("btnVerifyKey");
+
+        // Listen for Realtime Auth invalidation (e.g. key banned or deleted by Admin)
+        window.AuthSystem.onStatusChange((evt) => {
+            if (evt.status === "invalidated") {
+                authOverlay.classList.remove("hidden");
+                authErrorMsg.textContent = `❌ ${evt.reason}`;
+                window.SettingsManager.stopClock();
+            } else if (evt.status === "active") {
+                window.SettingsManager.startExpiryClock();
+            }
+        });
+
+        // Auto Login from Saved Session
+        const savedKey = window.AuthSystem.loadSavedSessionKey();
+        if (savedKey) {
+            btnVerifyKey.disabled = true;
+            btnVerifyKey.textContent = "ĐANG XÁC THỰC...";
+            const result = await window.AuthSystem.verifyKey(savedKey);
+            btnVerifyKey.disabled = false;
+            btnVerifyKey.textContent = "🔓 KÍCH HOẠT NGAY";
+
+            if (result.success) {
+                authOverlay.classList.add("hidden");
+                onLoginSuccess();
+            }
+        }
+
+        // Form Submit: Verify Key
+        keyAuthForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const rawKey = inputLicenseKey.value.trim().toUpperCase();
+            authErrorMsg.textContent = "";
+
+            if (!rawKey) {
+                authErrorMsg.textContent = "Vui lòng nhập mã Key!";
+                return;
+            }
+
+            btnVerifyKey.disabled = true;
+            btnVerifyKey.textContent = "ĐANG KIỂM TRA...";
+
+            const res = await window.AuthSystem.verifyKey(rawKey);
+            btnVerifyKey.disabled = false;
+            btnVerifyKey.textContent = "🔓 KÍCH HOẠT NGAY";
+
+            if (res.success) {
+                authOverlay.classList.add("hidden");
+                onLoginSuccess();
+            } else {
+                authErrorMsg.textContent = `❌ ${res.message}`;
+            }
+        });
+
+        function onLoginSuccess() {
+            window.SettingsManager.startExpiryClock();
+            window.SettingsManager.populateDeviceSpecs();
+        }
+
+        // Tab Navigation
+        const navItems = document.querySelectorAll(".nav-item");
+        const tabPages = document.querySelectorAll(".tab-page");
+
+        navItems.forEach(item => {
+            item.addEventListener("click", () => {
+                const targetTab = item.dataset.tab;
+                navItems.forEach(n => n.classList.remove("active"));
+                tabPages.forEach(p => p.classList.remove("active"));
+
+                item.classList.add("active");
+                const page = document.getElementById(targetTab);
+                if (page) page.classList.add("active");
+
+                window.GameBooster.playSound('click');
+
+                if (targetTab === "tabSettings") {
+                    window.SettingsManager.populateDeviceSpecs();
+                }
+            });
+        });
+
+        // Game Selection Cards
+        const cardFFNormal = document.getElementById("cardFFNormal");
+        const cardFFMax = document.getElementById("cardFFMax");
+
+        cardFFNormal.addEventListener("click", () => {
+            cardFFNormal.classList.add("selected");
+            cardFFMax.classList.remove("selected");
+            window.GameBooster.setSelectedGame("normal");
+            window.GameBooster.playSound('click');
+        });
+
+        cardFFMax.addEventListener("click", () => {
+            cardFFMax.classList.add("selected");
+            cardFFNormal.classList.remove("selected");
+            window.GameBooster.setSelectedGame("max");
+            window.GameBooster.playSound('click');
+        });
+
+        // START BOOST BUTTON
+        const btnStartBoost = document.getElementById("btnStartBoost");
+        const radarWrapper = document.getElementById("radarWrapper");
+        const radarPctText = document.getElementById("radarPctText");
+        const cyberTerminalLog = document.getElementById("cyberTerminalLog");
+
+        btnStartBoost.addEventListener("click", () => {
+            if (window.GameBooster.isOptimizing()) return;
+
+            btnStartBoost.disabled = true;
+            radarWrapper.classList.add("active");
+
+            window.GameBooster.startOptimization(
+                (pct) => {
+                    radarPctText.textContent = `${pct}%`;
+                },
+                (logMsg) => {
+                    cyberTerminalLog.textContent = logMsg;
+                },
+                (gameType) => {
+                    radarWrapper.classList.remove("active");
+                    btnStartBoost.disabled = false;
+                    radarPctText.textContent = "100%";
+                }
+            );
+        });
+
+        // Logout Button in Settings
+        document.getElementById("btnLogoutKey").addEventListener("click", () => {
+            if (confirm("Bạn có chắc chắn muốn đăng xuất Key này?")) {
+                window.AuthSystem.logout();
+                window.SettingsManager.stopClock();
+                authOverlay.classList.remove("hidden");
+                inputLicenseKey.value = "";
+                authErrorMsg.textContent = "";
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

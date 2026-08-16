@@ -1,0 +1,15 @@
+# Admin key generator tool (Bảo mật: không đẩy file tạo key lên GitHub)
+admin_key_generator.html
+admin_key_generator*.html
+*key_generator*.html
+*admin*.html
+*.key
+*.pem
+local_secrets/
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
