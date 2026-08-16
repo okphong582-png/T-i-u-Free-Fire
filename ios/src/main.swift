@@ -1,7 +1,6 @@
 import UIKit
 import WebKit
 
-@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
@@ -68,3 +67,11 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
         return .portrait
     }
 }
+
+// Top level execution entry point for Swift main.swift
+UIApplicationMain(
+    CommandLine.argc,
+    CommandLine.unsafeArgv,
+    nil,
+    NSStringFromClass(AppDelegate.self)
+)
