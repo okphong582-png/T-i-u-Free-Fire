@@ -12,17 +12,77 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Package iOS IPA Payload
+      - name: Setup Xcode
         run: |
-          python3 build_ipa.py
+          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+          xcrun --sdk iphoneos --show-sdk-path
+
+      - name: Compile Native iOS ARM64 Binary
+        run: |
+          SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
+          echo "Using iOS SDK at: $SDK_PATH"
+          
+          # Compile Swift code into native ARM64 Mach-O binary
+          swiftc -target arm64-apple-ios14.0 \
+                 -sdk "$SDK_PATH" \
+                 -O \
+                 -framework UIKit \
+                 -framework WebKit \
+                 -framework Foundation \
+                 ios/src/main.swift \
+                 -o ToiUuFreeFire
+
+          chmod +x ToiUuFreeFire
+          file ToiUuFreeFire
+
+      - name: Package App Bundle & Payload
+        run: |
+          mkdir -p Payload/ToiUuFreeFire.app
+          
+          # Copy Binary
+          cp ToiUuFreeFire Payload/ToiUuFreeFire.app/
+          
+          # Copy Plist & Icons
+          cp ios/Info.plist Payload/ToiUuFreeFire.app/
+          if [ -f "assets/logo.png" ]; then
+            cp assets/logo.png Payload/ToiUuFreeFire.app/AppIcon.png
+            cp assets/logo.png Payload/ToiUuFreeFire.app/AppIcon60x60@2x.png
+            cp assets/logo.png Payload/ToiUuFreeFire.app/AppIcon60x60@3x.png
+          fi
+          
+          # Copy Web Assets
+          cp -r assets Payload/ToiUuFreeFire.app/
+          cp -r css Payload/ToiUuFreeFire.app/
+          cp -r js Payload/ToiUuFreeFire.app/
+          cp index.html Payload/ToiUuFreeFire.app/
+          cp manifest.json Payload/ToiUuFreeFire.app/
+          cp service-worker.js Payload/ToiUuFreeFire.app/
+          
+          # Ad-hoc code sign for TrollStore / Sideloading
+          codesign -s - --force --deep --preserve-metadata=entitlements Payload/ToiUuFreeFire.app
+
+      - name: Create IPA Archive
+        run: |
+          zip -r9 ToiUuFreeFire_VIP.ipa Payload
+          ls -lh ToiUuFreeFire_VIP.ipa
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ToiUuFreeFire_HoangHa_TrongKien
-          path: "*.ipa"
+          name: ToiUuFreeFire_VIP_IPA
+          path: ToiUuFreeFire_VIP.ipa
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
+        with:
+          tag_name: v4.8.0-build-${{ github.run_number }}
+          name: "Tối Ưu Free Fire VIP v4.8.0 (Build ${{ github.run_number }})"
+          body: |
+            ## 🚀 Ứng Dụng Tối Ưu Free Fire VIP
+            - **Dev By Hoàng Hà And Trọng Kiên**
+            - File IPA được compile chuẩn Native ARM64 bằng Apple LLVM Compiler trên macOS Runner.
+            - Hỗ trợ cài đặt hoàn hảo 100% qua **TrollStore, AltStore, Sideloadly, Scarlet, Esign**.
+          files: ToiUuFreeFire_VIP.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
