@@ -1,5 +1,5 @@
 /**
- * TỐI ƯU FREE FIRE VIP - CYBER LUXURY HUD DESIGN SYSTEM
+ * TỐI ƯU FREE FIRE VIP - FULL SCREEN CYBER LUXURY HUD
  * Dev By Hoàng Hà And Trọng Kiên
  */
 
@@ -33,20 +33,24 @@
     user-select: none;
 }
 
-body {
+html, body {
+    width: 100%;
+    height: 100%;
+    height: -webkit-fill-available;
+    overflow: hidden;
     background-color: var(--bg-main);
     color: var(--text-main);
-    min-height: 100vh;
+}
+
+body {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: stretch;
     background-image: 
         radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.08) 0%, transparent 45%),
         radial-gradient(circle at 85% 85%, rgba(121, 40, 202, 0.08) 0%, transparent 45%),
         radial-gradient(circle at 50% 50%, rgba(255, 183, 3, 0.04) 0%, transparent 60%),
         linear-gradient(180deg, #050711 0%, #080c1d 100%);
-    overflow-x: hidden;
-    padding: 16px;
 }
 
 /* Cyber grid background layer */
@@ -61,17 +65,15 @@ body::before {
     z-index: 0;
 }
 
-/* App Container (iOS Mobile Optimized Frame) */
+/* App Container - 100% Full Screen Edge-to-Edge */
 .app-container {
     width: 100%;
-    max-width: 480px;
-    min-height: 840px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-cyan);
-    border-radius: 36px;
-    backdrop-filter: blur(28px);
-    -webkit-backdrop-filter: blur(28px);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), var(--glow-cyan);
+    height: 100%;
+    height: -webkit-fill-available;
+    max-width: 100%;
+    background: transparent;
+    border: none;
+    border-radius: 0;
     position: relative;
     overflow: hidden;
     display: flex;
@@ -83,19 +85,24 @@ body::before {
 .app-container::after {
     content: "";
     position: absolute;
-    top: 0; left: 0; right: 0; height: 4px;
+    top: 0; left: 0; right: 0; height: 3px;
     background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-gold));
     box-shadow: 0 0 15px var(--accent-cyan);
+    z-index: 100;
 }
 
 /* Header */
 .app-header {
-    padding: 24px 20px 16px;
+    padding: calc(env(safe-area-inset-top, 15px) + 12px) 20px 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: rgba(8, 12, 26, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     position: relative;
+    z-index: 10;
 }
 
 .header-brand {
@@ -105,8 +112,8 @@ body::before {
 }
 
 .app-icon-img {
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
     border-radius: 14px;
     border: 2px solid var(--accent-cyan);
     box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
@@ -157,11 +164,12 @@ body::before {
     50% { opacity: 0.3; transform: scale(0.8); }
 }
 
-/* App Main Viewports */
+/* App Main Viewport */
 .app-viewport {
     flex: 1;
-    padding: 20px;
+    padding: 16px 20px 20px;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     position: relative;
 }
 
@@ -196,7 +204,7 @@ body::before {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 14px;
-    margin-bottom: 22px;
+    margin-bottom: 18px;
 }
 
 .game-card {
@@ -240,8 +248,8 @@ body::before {
 }
 
 .game-logo-img {
-    width: 68px;
-    height: 68px;
+    width: 64px;
+    height: 64px;
     border-radius: 18px;
     object-fit: cover;
     margin: 0 auto 10px;
@@ -267,19 +275,19 @@ body::before {
     background: rgba(10, 16, 32, 0.85);
     border: 1px solid var(--border-cyan);
     border-radius: 24px;
-    padding: 24px 20px;
+    padding: 20px;
     text-align: center;
     position: relative;
     overflow: hidden;
-    margin-bottom: 22px;
+    margin-bottom: 18px;
     box-shadow: inset 0 0 30px rgba(0, 242, 254, 0.05);
 }
 
 .radar-circle-wrapper {
     position: relative;
-    width: 140px;
-    height: 140px;
-    margin: 0 auto 16px;
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 14px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -334,7 +342,7 @@ body::before {
 }
 
 .radar-pct {
-    font-size: 32px;
+    font-size: 30px;
     font-weight: 900;
     font-family: var(--font-mono);
     color: var(--accent-cyan);
@@ -342,7 +350,7 @@ body::before {
 }
 
 .radar-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
@@ -354,11 +362,11 @@ body::before {
     background: rgba(5, 8, 18, 0.9);
     border: 1px solid rgba(0, 242, 254, 0.15);
     border-radius: 14px;
-    padding: 12px;
+    padding: 10px 14px;
     font-family: var(--font-mono);
     font-size: 11px;
     color: var(--accent-cyan);
-    min-height: 52px;
+    min-height: 48px;
     text-align: left;
     display: flex;
     align-items: center;
@@ -372,10 +380,10 @@ body::before {
     background: linear-gradient(90deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%);
     background-size: 200% auto;
     border: none;
-    border-radius: 20px;
-    padding: 18px;
+    border-radius: 18px;
+    padding: 16px;
     color: #03040a;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -386,13 +394,12 @@ body::before {
     justify-content: center;
     align-items: center;
     gap: 10px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .btn-start-boost:hover {
     background-position: right center;
     transform: scale(1.02);
-    box-shadow: 0 12px 35px rgba(0, 242, 254, 0.7);
 }
 
 .btn-start-boost:active {
@@ -409,10 +416,10 @@ body::before {
 .timer-hero-card {
     background: linear-gradient(135deg, rgba(255, 183, 3, 0.12), rgba(121, 40, 202, 0.15));
     border: 1px solid var(--border-gold);
-    border-radius: 24px;
-    padding: 22px 18px;
+    border-radius: 22px;
+    padding: 18px 16px;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), var(--glow-gold);
     position: relative;
 }
@@ -421,18 +428,18 @@ body::before {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 8px;
-    margin: 16px 0;
+    margin: 14px 0;
 }
 
 .timer-box {
     background: rgba(8, 12, 24, 0.85);
     border: 1px solid rgba(255, 183, 3, 0.3);
-    border-radius: 14px;
-    padding: 12px 4px;
+    border-radius: 12px;
+    padding: 10px 4px;
 }
 
 .timer-num {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
     font-family: var(--font-mono);
     color: var(--accent-gold);
@@ -450,9 +457,9 @@ body::before {
 
 .key-badge {
     display: inline-block;
-    padding: 5px 12px;
+    padding: 4px 10px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;
 }
@@ -473,15 +480,15 @@ body::before {
 .spec-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin-bottom: 18px;
 }
 
 .spec-item {
     background: rgba(14, 20, 38, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 14px;
-    padding: 12px 16px;
+    border-radius: 12px;
+    padding: 10px 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -507,12 +514,12 @@ body::before {
 .tweak-toggle-item {
     background: rgba(14, 20, 38, 0.7);
     border: 1px solid rgba(0, 242, 254, 0.12);
-    border-radius: 16px;
-    padding: 14px 16px;
+    border-radius: 14px;
+    padding: 12px 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .tweak-info h4 {
@@ -531,8 +538,8 @@ body::before {
 .cyber-switch {
     position: relative;
     display: inline-block;
-    width: 48px;
-    height: 26px;
+    width: 44px;
+    height: 24px;
 }
 
 .cyber-switch input {
@@ -554,8 +561,8 @@ body::before {
 .switch-slider::before {
     position: absolute;
     content: "";
-    height: 18px;
-    width: 18px;
+    height: 16px;
+    width: 16px;
     left: 3px;
     bottom: 3px;
     background-color: #fff;
@@ -569,7 +576,7 @@ input:checked + .switch-slider {
 }
 
 input:checked + .switch-slider::before {
-    transform: translateX(22px);
+    transform: translateX(20px);
     background-color: #03040a;
 }
 
@@ -577,15 +584,15 @@ input:checked + .switch-slider::before {
 .dev-credit-banner {
     background: linear-gradient(90deg, rgba(255, 183, 3, 0.15), rgba(255, 87, 34, 0.15));
     border: 1px solid rgba(255, 183, 3, 0.5);
-    border-radius: 18px;
-    padding: 16px;
+    border-radius: 16px;
+    padding: 14px;
     text-align: center;
     box-shadow: 0 0 20px rgba(255, 183, 3, 0.25);
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .dev-credit-title {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 900;
     color: var(--accent-gold);
     text-transform: uppercase;
@@ -602,10 +609,13 @@ input:checked + .switch-slider::before {
 /* Bottom Navigation Bar */
 .bottom-nav {
     display: flex;
-    background: rgba(10, 15, 30, 0.95);
+    background: rgba(8, 12, 26, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 10px 16px;
-    border-radius: 0 0 36px 36px;
+    padding: 8px 16px calc(env(safe-area-inset-bottom, 12px) + 8px);
+    border-radius: 0;
+    z-index: 10;
 }
 
 .nav-item {
@@ -613,7 +623,7 @@ input:checked + .switch-slider::before {
     background: transparent;
     border: none;
     color: var(--text-muted);
-    padding: 8px 0;
+    padding: 6px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -625,7 +635,7 @@ input:checked + .switch-slider::before {
 }
 
 .nav-icon {
-    font-size: 20px;
+    font-size: 19px;
 }
 
 .nav-item.active {
@@ -637,20 +647,24 @@ input:checked + .switch-slider::before {
     filter: drop-shadow(0 0 8px var(--accent-cyan));
 }
 
-/* ================= AUTH MODAL (KEY INPUT SCREEN) ================= */
+/* ================= AUTH OVERLAY (KEY INPUT SCREEN) ================= */
 .auth-overlay {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(5, 7, 18, 0.96);
-    backdrop-filter: blur(30px);
+    background: rgba(5, 7, 18, 0.98);
+    backdrop-filter: blur(35px);
+    -webkit-backdrop-filter: blur(35px);
     z-index: 999;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 24px;
+    padding-top: calc(env(safe-area-inset-top, 20px) + 20px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 15px) + 20px);
     text-align: center;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-y: auto;
 }
 
 .auth-overlay.hidden {
@@ -660,13 +674,13 @@ input:checked + .switch-slider::before {
 }
 
 .auth-logo {
-    width: 90px;
-    height: 90px;
-    border-radius: 26px;
+    width: 80px;
+    height: 80px;
+    border-radius: 24px;
     border: 3px solid var(--accent-cyan);
     box-shadow: 0 0 30px rgba(0, 242, 254, 0.5);
     object-fit: cover;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     animation: float 3s ease-in-out infinite alternate;
 }
 
@@ -676,7 +690,7 @@ input:checked + .switch-slider::before {
 }
 
 .auth-title {
-    font-size: 22px;
+    font-size: 21px;
     font-weight: 900;
     background: linear-gradient(90deg, #ffffff, var(--accent-cyan));
     -webkit-background-clip: text;
@@ -687,14 +701,14 @@ input:checked + .switch-slider::before {
 .auth-desc {
     font-size: 12px;
     color: var(--text-muted);
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     max-width: 320px;
     line-height: 1.5;
 }
 
 .auth-input-box {
     width: 100%;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
 .auth-input {
@@ -702,7 +716,7 @@ input:checked + .switch-slider::before {
     background: rgba(14, 22, 45, 0.9);
     border: 2px solid rgba(0, 242, 254, 0.3);
     border-radius: 16px;
-    padding: 16px;
+    padding: 15px;
     color: #fff;
     font-size: 16px;
     font-family: var(--font-mono);
@@ -731,9 +745,9 @@ input:checked + .switch-slider::before {
     background: linear-gradient(90deg, #00f2fe, #4facfe);
     border: none;
     border-radius: 16px;
-    padding: 16px;
+    padding: 15px;
     color: #03040a;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 900;
     cursor: pointer;
     text-transform: uppercase;

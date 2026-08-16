@@ -23,6 +23,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
         let config = WKWebViewConfiguration()
         config.allowsInlineMediaPlayback = true
         config.mediaTypesRequiringUserActionForPlayback = []
+        config.preferences.javaScriptEnabled = true
         config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
         
         webView = WKWebView(frame: view.bounds, configuration: config)
@@ -31,6 +32,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
         webView.backgroundColor = .clear
         webView.scrollView.backgroundColor = .clear
         webView.scrollView.bounces = false
+        webView.scrollView.contentInsetAdjustmentBehavior = .never
         webView.navigationDelegate = self
         webView.uiDelegate = self
         
@@ -44,6 +46,11 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
             let bundleURL = Bundle.main.bundleURL.appendingPathComponent("index.html")
             webView.loadFileURL(bundleURL, allowingReadAccessTo: Bundle.main.bundleURL)
         }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        webView.frame = view.bounds
     }
     
     // Handle external URL schemes (freefire://, freefiremax://)
@@ -60,6 +67,10 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     }
 
     override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+    override var prefersHomeIndicatorAutoHidden: Bool {
         return true
     }
     
