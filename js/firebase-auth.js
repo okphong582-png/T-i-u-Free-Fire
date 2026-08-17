@@ -47,32 +47,46 @@ const AuthSystem = (function() {
             const now = Date.now();
 
             // 1. Check banned status
-            if (data.status === "banned") {
+            if (data.isBanned === true || data.status === "banned") {
                 return { success: false, message: "Mã Key này đã bị KHÓA do vi phạm chính sách!" };
             }
 
             // 2. Check expiration
-            if (!data.isLifetime && data.expiresAt < now) {
+            if (!data.isLifetime && data.expiresAt && data.expiresAt < now) {
                 return { success: false, message: "Mã Key này đã HẾT HẠN sử dụng! Vui lòng liên hệ Admin để gia hạn." };
             }
 
-            // 3. Check HWID binding
-            if (data.boundHWID && data.boundHWID !== hwid && data.maxDevices === 1) {
-                return { success: false, message: "Mã Key đã được kích hoạt trên một thiết bị khác! (HWID Locked)" };
+            // 3. Multi-device & HWID limit verification
+            const maxDevices = data.maxDevices || 1;
+            let boundList = data.boundHwids;
+            if (!Array.isArray(boundList)) {
+                boundList = [];
+                if (data.boundHWID) boundList.push(data.boundHWID);
+                else if (data.boundHwid) boundList.push(data.boundHwid);
             }
 
-            // Update HWID on first use if unbound
-            if (!data.boundHWID) {
-                await db.ref("license_keys").child(sanitized).update({
-                    boundHWID: hwid,
-                    lastUsed: now,
-                    deviceModel: navigator.userAgent.substring(0, 100)
-                });
-                data.boundHWID = hwid;
-            } else {
+            if (boundList.includes(hwid)) {
+                // Current device is already bound and authorized
                 await db.ref("license_keys").child(sanitized).update({
                     lastUsed: now
                 });
+            } else if (boundList.length < maxDevices) {
+                // Room available: bind current device
+                boundList.push(hwid);
+                await db.ref("license_keys").child(sanitized).update({
+                    boundHwids: boundList,
+                    boundHWID: boundList[0],
+                    boundHwid: boundList[0],
+                    lastUsed: now,
+                    deviceModel: navigator.userAgent.substring(0, 100)
+                });
+                data.boundHwids = boundList;
+                data.boundHWID = boundList[0];
+            } else {
+                return {
+                    success: false,
+                    message: `Mã Key đã đạt giới hạn tối đa (${boundList.length}/${maxDevices} thiết bị)! Vui lòng liên hệ Admin để Reset máy.`
+                };
             }
 
             _activeKey = cleanKey;
@@ -82,7 +96,7 @@ const AuthSystem = (function() {
             saveSession(cleanKey);
 
             // Start continuous realtime listener
-            startRealtimeListener(sanitized);
+            startRealtimeListener(sanitized, hwid);
 
             return { success: true, keyData: data };
         } catch (err) {
@@ -92,7 +106,7 @@ const AuthSystem = (function() {
     }
 
     // Continuous Realtime Heartbeat Listener
-    function startRealtimeListener(sanitizedKey) {
+    function startRealtimeListener(sanitizedKey, currentHwid) {
         if (_keyListenerUnsub) {
             _keyListenerUnsub();
             _keyListenerUnsub = null;
@@ -111,13 +125,27 @@ const AuthSystem = (function() {
             _keyData = data;
             const now = Date.now();
 
-            if (data.status === "banned") {
+            if (data.isBanned === true || data.status === "banned") {
                 handleKeyInvalidated("Key vừa bị Admin KHÓA quyền truy cập!");
                 return;
             }
 
-            if (!data.isLifetime && data.expiresAt < now) {
+            if (!data.isLifetime && data.expiresAt && data.expiresAt < now) {
                 handleKeyInvalidated("Key vừa HẾT HẠN sử dụng!");
+                return;
+            }
+
+            // Check if this device was reset / removed by admin
+            let boundList = data.boundHwids;
+            if (!Array.isArray(boundList)) {
+                boundList = [];
+                if (data.boundHWID) boundList.push(data.boundHWID);
+                else if (data.boundHwid) boundList.push(data.boundHwid);
+            }
+
+            // If key has been reset and this device is no longer in bound list
+            if (boundList.length > 0 && !boundList.includes(currentHwid)) {
+                handleKeyInvalidated("Mã Key đã được Admin Reset thiết bị sang máy khác!");
                 return;
             }
 
