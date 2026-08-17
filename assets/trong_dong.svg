@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500" opacity="0.12">
+  <circle cx="250" cy="250" r="240" fill="none" stroke="#ffd700" stroke-width="2"/>
+  <circle cx="250" cy="250" r="220" fill="none" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="4,4"/>
+  <circle cx="250" cy="250" r="195" fill="none" stroke="#ffd700" stroke-width="2"/>
+  <circle cx="250" cy="250" r="165" fill="none" stroke="#ffd700" stroke-width="1.5"/>
+  <circle cx="250" cy="250" r="135" fill="none" stroke="#ffd700" stroke-width="2" stroke-dasharray="6,3"/>
+  <circle cx="250" cy="250" r="95" fill="none" stroke="#ffd700" stroke-width="2"/>
+  <circle cx="250" cy="250" r="55" fill="none" stroke="#ffd700" stroke-width="1.5"/>
+  <!-- Central 14-point Sun Star -->
+  <polygon points="250,195 255,235 290,205 265,240 305,230 270,250 305,270 265,260 290,295 255,265 250,305 245,265 210,295 235,260 195,270 230,250 195,230 235,240 210,205 245,235" fill="#ffd700"/>
+  <!-- Geometric bird and circle patterns -->
+  <circle cx="250" cy="250" r="25" fill="#ffd700"/>
+</svg>

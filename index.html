@@ -155,7 +155,7 @@
 
             <div class="setting-row">
                 <div class="setting-meta">
-                    <h4>🎯 Giảm Độ Trễ Cảm Ứng (Touch Latency 0.05ms)</h4>
+                    <h4>⚡ Giảm Độ Trễ Cảm Ứng (Touch Latency 0.05ms)</h4>
                     <p>Triệt tiêu độ trễ 300ms gesture mặc định của iOS</p>
                 </div>
                 <label class="ios-toggle">
@@ -366,12 +366,35 @@
             <div class="dev-sig-sub">Bảo mật đa tầng chống bẻ khóa 2026</div>
         </div>
     </div>
+
+    <!-- FULL SCREEN REMOTE APP UPDATE SHIELD -->
+    <div class="update-shield-overlay hidden" id="updateOverlay">
+        <div class="update-card-content">
+            <div class="update-icon-glow">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </div>
+            <h2 class="update-title-text" id="updateTitle">YÊU CẦU CẬP NHẬT PHIÊN BẢN MỚI</h2>
+            <div class="update-version-tag" id="updateVersionTag">Phiên bản mới: v4.9.0</div>
+            <div class="update-msg-box" id="updateMessage">
+                Ứng dụng cần được cập nhật lên phiên bản mới hơn để tiếp tục sử dụng. Vui lòng nhấn nút bên dưới để tải bản cài đặt mới.
+            </div>
+            <a href="https://github.com/okphong582-png/T-i-u-Free-Fire/releases" target="_blank" class="btn-update-download" id="btnUpdateDownload">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>TẢI BẢN CẬP NHẬT NGAY</span>
+            </a>
+        </div>
+        <div class="dev-signature-card">
+            <div class="dev-sig-name">⚡ Dev By Hoàng Hà And Trọng Kiên</div>
+            <div class="dev-sig-sub">Thông báo chính thức từ Admin hệ thống</div>
+        </div>
+    </div>
 </div>
 
 <!-- Scripts -->
 <script src="js/config.js"></script>
 <script src="js/security.js"></script>
 <script src="js/firebase-auth.js"></script>
+<script src="js/app-config.js"></script>
 <script src="js/booster.js"></script>
 <script src="js/settings.js"></script>
 
@@ -382,7 +405,10 @@
             console.warn("[Security Alert]", reason);
         });
 
-        // Populate device info, IMEI and model displays (IP11, IP12, IP13, IP14, IP15)
+        // Initialize Realtime Theme & Remote Update Control from Admin
+        window.AppConfigManager.initRealtimeConfigListener();
+
+        // Populate device info, IMEI and exact model displays (IP11, IP12, IP13, IP14, IP15)
         window.SettingsManager.populateAllHardwareDisplays();
 
         const authOverlay = document.getElementById("authOverlay");
