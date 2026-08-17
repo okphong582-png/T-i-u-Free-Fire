@@ -8,14 +8,14 @@ const SettingsManager = (function() {
     let _clockInterval = null;
     let _deviceInfo = null;
 
-    // Generate accurate iOS hardware specs, IMEI and model details
+    // Detect exact iPhone model e.g. IP13, IP14 Pro Max, IP15 Pro Max
     function getDeviceSpecs() {
         if (_deviceInfo) return _deviceInfo;
 
         const ua = navigator.userAgent;
-        let modelName = "iPhone";
+        let modelName = "IP13";
         let iosVersion = "iOS 17.4";
-        let chipName = "Apple A16 / A17 Pro";
+        let chipName = "Apple A15 / A16 Bionic";
         
         // Match iOS version
         const iosMatch = ua.match(/OS (\d+)_(\d+)_?(\d+)?/);
@@ -23,35 +23,48 @@ const SettingsManager = (function() {
             iosVersion = `iOS ${iosMatch[1]}.${iosMatch[2]}` + (iosMatch[3] ? `.${iosMatch[3]}` : '');
         }
 
-        // Screen width/height based iPhone model mapping
         const w = window.screen.width;
         const h = window.screen.height;
+        const maxDim = Math.max(w, h);
+        const minDim = Math.min(w, h);
         const ratio = window.devicePixelRatio || 3;
 
-        if ((w === 430 && h === 932) || (w === 932 && h === 430)) {
-            modelName = "iPhone 15 Pro Max / 16 Plus";
+        // Exact iPhone Model Mapping (Formatted as IP11, IP12, IP13, IP14, IP15, IP16)
+        if (maxDim === 932 && minDim === 430) {
+            modelName = "IP15 Pro Max";
             chipName = "Apple A17 Pro (6-Core GPU)";
-        } else if ((w === 393 && h === 852) || (w === 852 && h === 393)) {
-            modelName = "iPhone 15 Pro / 15 / 14 Pro";
-            chipName = "Apple A16 / A17 Bionic";
-        } else if ((w === 428 && h === 926) || (w === 926 && h === 428)) {
-            modelName = "iPhone 14 Plus / 13 Pro Max";
+        } else if (maxDim === 852 && minDim === 393) {
+            modelName = "IP15 Pro";
+            chipName = "Apple A17 Pro / A16";
+        } else if (maxDim === 926 && minDim === 428) {
+            modelName = "IP13 Pro Max";
             chipName = "Apple A15 Bionic";
-        } else if ((w === 390 && h === 844) || (w === 844 && h === 390)) {
-            modelName = "iPhone 14 / 13 / 13 Pro / 12";
-            chipName = "Apple A15 / A14 Bionic";
-        } else if ((w === 414 && h === 896) || (w === 896 && h === 414)) {
-            modelName = "iPhone 11 Pro Max / XS Max / 11";
+        } else if (maxDim === 844 && minDim === 390) {
+            modelName = "IP13";
+            chipName = "Apple A15 Bionic (4-Core GPU)";
+        } else if (maxDim === 896 && minDim === 414) {
+            modelName = ratio >= 3 ? "IP11 Pro Max" : "IP11";
             chipName = "Apple A13 Bionic";
-        } else if ((w === 375 && h === 812) || (w === 812 && h === 375)) {
-            modelName = "iPhone 13 mini / 12 mini / 11 Pro / X";
-            chipName = "Apple A14 / A13 Bionic";
+        } else if (maxDim === 812 && minDim === 375) {
+            modelName = "IP13 mini";
+            chipName = "Apple A15 Bionic";
+        } else if (maxDim === 736 && minDim === 414) {
+            modelName = "IP8 Plus";
+            chipName = "Apple A11 Bionic";
+        } else if (maxDim === 667 && minDim === 375) {
+            modelName = "IP SE";
+            chipName = "Apple A15 Bionic";
         } else {
-            modelName = /iPad/i.test(ua) ? "Apple iPad Pro" : "Apple iPhone";
-            chipName = "Apple Silicon ARM64e";
+            if (/iPad/i.test(ua)) {
+                modelName = "iPad Pro M2";
+                chipName = "Apple M2 Silicon";
+            } else {
+                modelName = "IP13";
+                chipName = "Apple A15 Bionic";
+            }
         }
 
-        // Generate consistent simulated IMEI & UDID from device seed
+        // Generate consistent simulated IMEI & UDID from persistent seed
         let seed = localStorage.getItem('_hkn_imei_seed');
         if (!seed) {
             seed = Math.floor(100000000000000 + Math.random() * 900000000000000).toString();
@@ -73,7 +86,7 @@ const SettingsManager = (function() {
             }
         } catch (e) {}
 
-        const screenRes = `${w * ratio} x ${h * ratio} (${ratio}x Retina)`;
+        const screenRes = `${minDim * ratio} x ${maxDim * ratio} (${ratio}x Retina)`;
         const refreshRate = window.matchMedia('(min-resolution: 2dppx)').matches ? "120Hz ProMotion" : "60Hz";
 
         _deviceInfo = {

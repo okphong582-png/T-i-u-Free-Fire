@@ -1,5 +1,5 @@
 /**
- * HỆ THỐNG TỐI ƯU CẢM ỨNG VUỐT TÂM, ICLEANER PRO & DỌN RAM THẬT
+ * HỆ THỐNG TỐI ƯU CẢM ỨNG VUỐT TÂM, ICLEANER PRO & KIỂM TRA MỞ GAME 75%
  * Dev By Hoàng Hà And Trọng Kiên
  */
 'use strict';
@@ -9,7 +9,6 @@ const GameBooster = (function() {
     let _isOptimizing = false;
     let _audioCtx = null;
     let _touchSensitivity = 150; // 100% to 200%
-    let _touchSamplingRate = 240; // 240Hz sampling
 
     function initAudio() {
         if (!_audioCtx) {
@@ -63,6 +62,18 @@ const GameBooster = (function() {
                 gain.connect(_audioCtx.destination);
                 osc.start(now);
                 osc.stop(now + 0.5);
+            } else if (type === 'error') {
+                const osc = _audioCtx.createOscillator();
+                const gain = _audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.linearRampToValueAtTime(150, now + 0.3);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain);
+                gain.connect(_audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
             }
         } catch (e) {}
     }
@@ -90,12 +101,8 @@ const GameBooster = (function() {
         _touchSensitivity = multiplier || _touchSensitivity;
         try {
             document.body.style.touchAction = 'manipulation';
-            
-            // High frequency pointer acceleration listener
             window.addEventListener('touchstart', (e) => {}, { passive: true, capture: true });
             window.addEventListener('touchmove', (e) => {}, { passive: true, capture: true });
-            
-            // Store setting
             localStorage.setItem('_hkn_touch_dpi', _touchSensitivity.toString());
         } catch (e) {}
     }
@@ -125,62 +132,102 @@ const GameBooster = (function() {
         } catch (e) {}
     }
 
-    // Main Boost Sequence
-    async function startOptimization(onProgress, onLog, onFinished) {
+    // Main Boost Sequence with 75% Game Check
+    async function startOptimization(onProgress, onLog, onFinished, onError) {
         if (_isOptimizing) return;
         _isOptimizing = true;
 
         initAudio();
         playSound('boost');
 
-        const steps = [
-            { pct: 18, msg: "⚙️ Đang đọc cấu hình chip Apple Silicon & IMEI..." },
-            { pct: 38, msg: "🧹 iCleaner Engine: Đang quét & ép dọn sạch bộ nhớ đệm RAM..." },
-            { pct: 58, msg: `🎯 Đang hiệu chỉnh độ nhạy vuốt tâm DPI ${_touchSensitivity}% (0.05ms Latency)...` },
-            { pct: 78, msg: "🌐 Đang kích hoạt định tuyến DNS 1.1.1.1 Gaming..." },
-            { pct: 92, msg: "🔥 Đang nung trước GPU Metal Shaders & Khóa 120 FPS..." },
-            { pct: 100, msg: "✅ ĐÃ TỐI ƯU HOÀN TẤT! ĐANG MỞ FREE FIRE..." }
-        ];
+        // Step 1: 18%
+        if (typeof onProgress === 'function') onProgress(18);
+        if (typeof onLog === 'function') onLog("⚙️ Đang đọc cấu hình chip Apple Silicon & định danh IMEI...");
+        playSound('tick');
+        await new Promise(r => setTimeout(r, 400));
 
-        for (let i = 0; i < steps.length; i++) {
-            const step = steps[i];
+        // Step 2: 38%
+        await executeICleanerRAMFlush();
+        if (typeof onProgress === 'function') onProgress(38);
+        if (typeof onLog === 'function') onLog("🧹 iCleaner Engine: Đang quét & ép dọn sạch bộ nhớ đệm RAM...");
+        playSound('tick');
+        await new Promise(r => setTimeout(r, 450));
 
-            if (i === 1) {
-                await executeICleanerRAMFlush();
-            } else if (i === 2) {
-                calibrateHeadshotTouchEngine(_touchSensitivity);
-            } else if (i === 3) {
-                const ping = await measureRealPing();
-                step.msg += ` [Ping: ${ping}ms]`;
-            } else if (i === 4) {
-                warmupGPUShaders();
+        // Step 3: 58%
+        calibrateHeadshotTouchEngine(_touchSensitivity);
+        warmupGPUShaders();
+        const ping = await measureRealPing();
+        if (typeof onProgress === 'function') onProgress(58);
+        if (typeof onLog === 'function') onLog(`🎯 Hiệu chỉnh độ nhạy vuốt tâm DPI ${_touchSensitivity}% [Ping Live: ${ping}ms]...`);
+        playSound('tick');
+        await new Promise(r => setTimeout(r, 450));
+
+        // Step 4: 75% - Launch & Verify Game Installation
+        if (typeof onProgress === 'function') onProgress(75);
+        if (typeof onLog === 'function') onLog("🚀 Đang kiểm tra & kích hoạt khởi động Free Fire...");
+        playSound('boost');
+
+        const isMax = _selectedGame === 'max';
+        const targetScheme = isMax ? 'freefiremax://' : 'freefire://';
+        const appStoreUrl = isMax ? 'https://apps.apple.com/app/id1480516829' : 'https://apps.apple.com/app/id1300146617';
+
+        let appSwitched = false;
+        let nativeConfirmed = false;
+
+        const onPageHide = () => { appSwitched = true; };
+        const onVisibilityChange = () => {
+            if (document.hidden || document.visibilityState === 'hidden') appSwitched = true;
+        };
+
+        window.addEventListener('pagehide', onPageHide);
+        document.addEventListener('visibilitychange', onVisibilityChange);
+
+        // Native iOS Bridge Hooks
+        window.onGameLaunchSuccess = function() {
+            nativeConfirmed = true;
+            appSwitched = true;
+        };
+
+        window.onGameLaunchFailed = function() {
+            nativeConfirmed = false;
+            appSwitched = false;
+        };
+
+        // Trigger deep link launch
+        window.location.href = targetScheme;
+
+        // Wait up to 2.2 seconds to verify if the game opens
+        await new Promise(r => setTimeout(r, 2200));
+
+        window.removeEventListener('pagehide', onPageHide);
+        document.removeEventListener('visibilitychange', onVisibilityChange);
+
+        // Check if game was opened
+        if (!appSwitched && !nativeConfirmed) {
+            // GAME NOT INSTALLED - STOP AT 75% AND SHOW ERROR
+            _isOptimizing = false;
+            playSound('error');
+            if (typeof onProgress === 'function') onProgress(75);
+            if (typeof onLog === 'function') {
+                onLog(`❌ LỖI (75%): Không tìm thấy game trên máy! Bạn chưa tải ${_selectedGame === 'max' ? 'Free Fire MAX' : 'Free Fire Tiêu Chuẩn'}.`);
             }
-
-            if (typeof onProgress === 'function') onProgress(step.pct);
-            if (typeof onLog === 'function') onLog(step.msg);
-
-            playSound('tick');
-            await new Promise(r => setTimeout(r, 400));
+            if (typeof onError === 'function') {
+                onError(_selectedGame, appStoreUrl);
+            }
+            return;
         }
 
+        // GAME OPENED SUCCESSFULLY - REACH 100%
+        if (typeof onProgress === 'function') onProgress(100);
+        if (typeof onLog === 'function') {
+            onLog("✅ ĐÃ MỞ GAME THÀNH CÔNG! Chúc bạn leo rank bất tử!");
+        }
         playSound('done');
         _isOptimizing = false;
 
         if (typeof onFinished === 'function') {
             onFinished(_selectedGame);
         }
-
-        // Auto launch game
-        setTimeout(() => {
-            launchGame(_selectedGame);
-        }, 800);
-    }
-
-    function launchGame(gameType) {
-        const isMax = gameType === 'max';
-        const targetScheme = isMax ? 'freefiremax://' : 'freefire://';
-        console.log(`[AutoLaunch] Launching: ${targetScheme}`);
-        window.location.href = targetScheme;
     }
 
     return {
@@ -189,7 +236,6 @@ const GameBooster = (function() {
         setTouchSensitivity: (val) => { _touchSensitivity = val; },
         getTouchSensitivity: () => _touchSensitivity,
         startOptimization,
-        launchGame,
         playSound,
         isOptimizing: () => _isOptimizing,
         measureRealPing,

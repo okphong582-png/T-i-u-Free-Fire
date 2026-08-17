@@ -56,6 +56,13 @@ body {
     background: radial-gradient(circle at 50% 0%, #151922 0%, #000000 70%);
 }
 
+/* Custom Vector Badge Icon */
+.custom-badge-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 2px;
+}
+
 /* App Container Full Screen */
 .app-container {
     width: 100%;
@@ -346,6 +353,7 @@ body {
     letter-spacing: 0.8px;
     text-transform: uppercase;
     margin-top: 4px;
+    transition: color 0.3s;
 }
 
 /* Terminal Feed */
@@ -362,6 +370,29 @@ body {
     align-items: center;
     line-height: 1.4;
     word-break: break-word;
+    margin-bottom: 8px;
+}
+
+/* App Store Download Button on 75% Error */
+.appstore-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(255, 59, 48, 0.15);
+    border: 1px solid rgba(255, 59, 48, 0.4);
+    color: #ff453a;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    margin-top: 10px;
+    transition: all 0.2s;
+}
+
+.appstore-btn:active {
+    background: rgba(255, 59, 48, 0.3);
 }
 
 /* Primary Action Button (Stealth Gold / Titanium) */
@@ -414,6 +445,10 @@ body {
     color: var(--accent-gold);
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 
 .dev-sig-sub {

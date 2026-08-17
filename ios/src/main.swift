@@ -18,7 +18,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(red: 0.02, green: 0.03, blue: 0.07, alpha: 1.0)
+        view.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         
         let config = WKWebViewConfiguration()
         config.allowsInlineMediaPlayback = true
@@ -26,11 +26,11 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
         config.preferences.javaScriptEnabled = true
         config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
         
-        webView = WKWebView(frame: view.bounds, configuration: config)
+        webView = WKWebView(frame: UIScreen.main.bounds, configuration: config)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         webView.isOpaque = false
-        webView.backgroundColor = .clear
-        webView.scrollView.backgroundColor = .clear
+        webView.backgroundColor = .black
+        webView.scrollView.backgroundColor = .black
         webView.scrollView.bounces = false
         webView.scrollView.contentInsetAdjustmentBehavior = .never
         webView.navigationDelegate = self
@@ -53,14 +53,27 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
         webView.frame = view.bounds
     }
     
-    // Handle external URL schemes (freefire://, freefiremax://)
+    // Handle external URL schemes (freefire://, freefiremax://) and notify JS
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         if let url = navigationAction.request.url {
             let scheme = url.scheme?.lowercased() ?? ""
             if scheme != "file" && scheme != "http" && scheme != "https" {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                decisionHandler(.cancel)
-                return
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:]) { success in
+                        if success {
+                            webView.evaluateJavaScript("window.onGameLaunchSuccess && window.onGameLaunchSuccess();", completionHandler: nil)
+                        } else {
+                            webView.evaluateJavaScript("window.onGameLaunchFailed && window.onGameLaunchFailed();", completionHandler: nil)
+                        }
+                    }
+                    decisionHandler(.cancel)
+                    return
+                } else {
+                    // Game is not installed
+                    webView.evaluateJavaScript("window.onGameLaunchFailed && window.onGameLaunchFailed();", completionHandler: nil)
+                    decisionHandler(.cancel)
+                    return
+                }
             }
         }
         decisionHandler(.allow)
